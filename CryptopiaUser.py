@@ -11,7 +11,7 @@ import sys
 
 class CryptopiaUser(object):
 
-    def __init__(self, API_KEY, API_SECRET):
+    def __init__(self, API_KEY='', API_SECRET=''):
         self.API_KEY = API_KEY
         self.API_SECRET = API_SECRET
 
@@ -23,21 +23,18 @@ class CryptopiaUser(object):
 
     #Get market
     def getMarket(self):
-        h = httplib2.Http(".cache")
-        (resp_headers, content) = h.request("https://www.cryptopia.co.nz/api/GetMarket/CEFS_BTC", "GET")
+        r = requests.get('https://www.cryptopia.co.nz/api/GetMarket/CEFS_BTC')
+        return_json = json.loads(r.text)
+        return return_json
 
-        fcontent = json.loads(content)
-
-        print(fcontent['Data']['LastPrice'])
-
-    def secure_headers(url, post_data):
+    def secure_headers(self, url, post_data):
         nonce = str( int( time.time() ) )
         m = hashlib.md5()
         m.update(post_data.encode())
         requestContentBase64String = base64.b64encode(m.digest())
-        signature = API_KEY + "POST" + urllib.parse.quote_plus( url ).lower() + nonce + requestContentBase64String.decode()
-        hmacsignature = base64.b64encode(hmac.new(base64.b64decode( API_SECRET ), signature.encode(), hashlib.sha256).digest()).decode()
-        header_value = "amx " + API_KEY + ":" + hmacsignature + ":" + nonce
+        signature = self.API_KEY + "POST" + urllib.parse.quote_plus( url ).lower() + nonce + requestContentBase64String.decode()
+        hmacsignature = base64.b64encode(hmac.new(base64.b64decode( self.API_SECRET ), signature.encode(), hashlib.sha256).digest()).decode()
+        header_value = "amx " + self.API_KEY + ":" + hmacsignature + ":" + nonce
         headers = { 'Authorization': header_value, 'Content-Type':'application/json; charset=utf-8' }
         return headers
 
@@ -45,24 +42,21 @@ class CryptopiaUser(object):
         if request_param in self.private:
             url = "https://www.cryptopia.co.nz/Api/" + request_param
 
-            req = get_param
-
-            post_data = json.dumps( req );
-            headers = self.secure_headers(url, post_param)
+            post_data = json.dumps( post_param );
+            headers = self.secure_headers(url, post_data)
             r = requests.post( url, data = post_data, headers = headers )
 
-            response = r.text
-            print("( Response ): " + response)
+            return_json = json.loads(r.text)
+            return return_json
 
         elif request_param in self.public:
             url = "https://www.cryptopia.co.nz/Api/" + request_param + "/" + \
-                  ('/'.join(i for i in get_parameters.values()) if get_param is not None else "")
-            h = httplib2.Http(".cache")
-            (resp_headers, content) = h.request(url, "GET")
+                ('/'.join(i for i in get_parameters.values()) if get_param is not None else "")
 
-            fcontent = json.loads(content)
+            r = requests.get(url)
+            return_json = json.loads(r.text)
 
-            print(fcontent)
+            return return_json
 
     def get_currencies(self):
         """ Gets all the currencies """
@@ -96,13 +90,12 @@ class CryptopiaUser(object):
         return self.api_query(request_param='GetMarketOrderGroups',
                               get_parameters={'markets': markets})
 
-    def get_balance(self, currency):
+    def get_balance(self, currency=''):
         """ Gets the balance of the user in the specified currency """
-        result, error = self.api_query(request_param='GetBalance',
-                                       post_param={'Currency': currency})
-        if error is None:
-            result = result[0]
-        return (result, error)
+        #result, error =
+        #if error is None:
+        #    result = result[0]
+        return self.api_query(request_param='GetBalance', post_param={'Currency': currency})
 
     def get_openorders(self, market):
         """ Gets the open order for the user in the specified market """
