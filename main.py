@@ -18,11 +18,13 @@ from CoinigyRest2 import CoinigyRest2
 from Position import Position
 from Bittrex import Bittrex
 from hitBTC import hitBTC
+from ArtificialExchange import ArtificialExchange
 from TraderHub import TraderHub
 import multiprocessing as mp
 from multiprocessing import Value
 import pickle
 import time
+import logging
 #coinigy = CoinigyRest2()
 #coinigy_socket = coinigy_socket()
 #coinigy_socket.start()
@@ -48,15 +50,15 @@ coinigy.getAccounts()
 """
 #btrx = Bittrex()
 #
+ae = ArtificialExchange()
 
-btrx = Bittrex(API_KEY_BTRX, API_SECRET_BTRX)
+#btrx = Bittrex(API_KEY_BTRX, API_SECRET_BTRX)
 #print(btrx.getBalance())
 #print(btrx.getMarkets())
 #print(btrx.getTicker('BTC-XRP'))
 #print(btrx.getTicker('BTC-LTC'))
 #print(btrx.getBalance('XRP'))
 #print(btrx.getOrderHistory('BTC-XRP'))
-
 
 def multiBTRX(q, exchange, num):
     tr_hub = TraderHub(exchange, q, num)
@@ -65,7 +67,7 @@ if __name__ == '__main__':
     mp.set_start_method('spawn')
     q = mp.Queue()
     num = Value('i', 0)
-    p = mp.Process(target=multiBTRX, args=(q, btrx, num))
+    p = mp.Process(target=multiBTRX, args=(q, ae, num))
     p.start()
     #print()
     input('press enter to exit.')
