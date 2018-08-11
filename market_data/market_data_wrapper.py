@@ -1,7 +1,6 @@
 from abc import abstractmethod, ABCMeta
 
 
-
 class MarketDataWrapper(object, metaclass=ABCMeta):
 
     def __init__(self):
@@ -20,21 +19,13 @@ class MarketDataWrapper(object, metaclass=ABCMeta):
         pass
 
     @abstractmethod
-    def get_all_historical_data_for_currency_between_dates(self, pairs):
+    def get_all_historical_data_for_currency_from_today(self, pairs, days):
         pass
 
     @abstractmethod
-    def get_hourly_data_for_currency(self, pairs):
+    def get_hourly_data_for_currency(self, pairs, hours):
         pass
 
     @abstractmethod
-    def get_hourly_data_for_currencies(self, pairs):
-        pass
-
-    @abstractmethod
-    def get_minute_data_for_currency(self, pairs):
-        pass
-
-    @abstractmethod
-    def get_minute_data_for_currencies(self, pairs):
+    def get_minute_data_for_currency(self, pairs, minutes):
         pass
