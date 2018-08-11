@@ -1,0 +1,104 @@
+591759615:AAHKDEGblQac61-LIz61kuO4Ai8rkt8mspQ
+
+balances {'result':{'Currency': soemth, 'Balance': 500}}
+ticker {'bid': 000, 'ask':000 'last':000}
+trade {'success':'true', 'result':{'uuid': 'fefsefs'}}
+open orders {'result':{}}
+
+PATH=$PATH:$HOME/anaconda/bin
+echo 'export PATH=$PATH:$HOME/anaconda/bin:$PATH' >>~/.bash_profile
+
+
+conda config --add envs_dirs /path/to/directory/containing/other/environments
+
+table with base currency?
+
+keep position as is,
+
+compare holdings? to 
+
+only need to know, sold at, bought at, 
+
+    def trade(self, current_price):
+        self.hold = True
+        profit = current_price / self.entry_price
+        high =  current_price / self.last_high
+        low = current_price / self.last_low
+        #print('profit: ' +str(profit) +' high: '+str(high)+' low: '+ str(low) )
+        if self.order_type == 'buy':
+            if high < 0.93  and profit > 1.01:
+                self.hold = False
+                print('trade confirmed')
+
+        else:
+            if low > 1.05 and profit < 0.95:
+                self.hold = False
+
+        return self.hold
+		
+		
+		        if high < 1.0 and self.order_type == 'buy':
+            if self.trade(current_price):
+                return 'Profit not high enough'
+            else:
+                return 'Profit high enough, sell'
+
+        elif low > 1.0 and self.order_type == 'sell':
+            if self.trade(current_price):
+                return 'Profit not high enough'
+            else:
+                return 'Profit high enough, buy'
+				
+Update positions:
+get all positions
+if position exists
+	update
+else
+	make new
+				
+Current issues:
+
+Trading,
+Buying and selling is limited: going from XRP to USDT:
+Bought 2000@0.942 rate = -109.5 xrp and 1756 USDT
+
+Analysis:
+	2000 * 0.942 = 1884
+	1884 - 1756 = 128
+	Somehow, some of the boguht usdt was subtracted from xrp 
+	
+	discrepancy between app holdings and "server" holdings?
+	
+	Make some kind of currency object?
+	
+	
+	
+!!!!
+Eureka
+pull currencies
+have separate table with orders that are a percentage of total currency 
+	no need to keep track of how much a order can execute!
+Order:
+	sell_at_target/buy_at_target, currency, base_currency
+	
+order = {uuid, external_uuid='', target='', currency='', base=''}
+
+todo:
+rewrite tradePositions for orders
+
+
+Database Handler
+---------------------------------------------------------
+change the get orders datatype to DataFrame
+	
+Add market data DataFrame
+---------------------------------------------------------
+from market cap, get currencies
+
+for each currency, get market history in BTC and USD
+---------------------------------------------------------
+
+Keep up to date
+---------------------------------------------------------
+For each currency, if date is missing, get dates
+---------------------------------------------------------

@@ -1,18 +1,13 @@
 import requests
 import json
-import datetime
+from datetime import datetime as dt
 import pandas as pd
 import pickle
 from bs4 import BeautifulSoup
 
 
-class MarketData(object):
+class DataManager(object):
 
-    """
-    ----------------------------------------------------------------------------------------------
-    Life Cycle Methods
-    ----------------------------------------------------------------------------------------------
-    """
     def __init__(self):
         self.market_data = pd.DataFrame(index=['currency', 'date'])
         self.currency_list = pd.DataFrame()
@@ -22,27 +17,27 @@ class MarketData(object):
         try:
             self.market_data = pd.read_pickle('market_data.pickle')
         except FileNotFoundError:
-            self.load_new_data()
-            self.download_market_data()
+            self._load_new_data()
+            self._download_market_data()
 
-    def date_check(self):
-        today = datetime.datetime.now()
+    def update(self):
+        last_date = self.market_data.index.max()[1]
+        if (dt.now() - last_date).days > 1:
+            pass
 
-    """
-    ----------------------------------------------------------------------------------------------
-    Loading Methods
-    ----------------------------------------------------------------------------------------------
-    """
-    def download_market_data(self):
+    def _get_historical_data_between(self, date, currency):
+        pass
+
+    def _download_market_data(self):
         """Loads 400 of the top crypto currency data"""
 
         dfs = []
         for x in range(400):
-            dfs.append(self.load_from_cryptocompare(self.currency_list.iloc[x].symbol))
+            dfs.append(self._load_from_cryptocompare(self.currency_list.iloc[x].symbol))
 
         self.market_data = pd.concat(dfs)
 
-    def load_from_cryptocompare(self, currency):
+    def _load_from_cryptocompare(self, currency):
         """Loads the specified crypto from cryptocompare
             creates a mutli-index Dataframe"""
 
@@ -61,7 +56,7 @@ class MarketData(object):
 
         return df
 
-    def load_new_data(self):
+    def _load_new_data(self):
         """Checks if there is a pickle of coinmarketcap data if  not, load from website"""
 
         try:
@@ -69,9 +64,9 @@ class MarketData(object):
                 self.currency_list = pickle.load(data)
         except FileNotFoundError:
             market_cap_html = requests.get('https://coinmarketcap.com/all/views/all/')
-            self.currency_list = self.parse_html_data(market_cap_html)
+            self.currency_list = self._parse_html_data(market_cap_html)
 
-    def parse_html_data(self, market_cap_html):
+    def _parse_html_data(self, market_cap_html):
         """Processes the loaded data from coinmarket cap, yielding a dataframe"""
 
         soup = BeautifulSoup(market_cap_html.content, 'html.parser')

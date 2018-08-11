@@ -1,12 +1,4 @@
-from CryptopiaUser import CryptopiaUser
 
-
-API_KEY = 'f64f58cb2f1342068ba2689f049c2b9f'
-API_SECRET = 'ssKtRB836MWX2sLmT4ZK9G5OL1N92WGfNxI45B4QKEQ='
-API_KEY_BTRX = '8e12797de06c4fb9b4ba37c105a9e16b'
-API_SECRET_BTRX = '6234a3267abb4c799258daf75defdd69'
-API_KEY_hitBTC = '9aefce39ba2e12d97dfacc6369b0d993'
-API_SECRET_hitBTC = '7d490d5091fd2c9a7f9ac99b9e17dbe4'
 
 #crpUser = CryptopiaUser(API_KEY, API_SECRET)
 
@@ -14,17 +6,11 @@ API_SECRET_hitBTC = '7d490d5091fd2c9a7f9ac99b9e17dbe4'
 #crpUser.get_currencies()
 
 #from coinigy_socket import coinigy_socket
-from CoinigyRest2 import CoinigyRest2
-from Position import Position
-from Bittrex import Bittrex
-from hitBTC import hitBTC
-from ArtificialExchange import ArtificialExchange
-from TraderHub import TraderHub
+from exchange_wrappers.artificial_exchange import ArtificialExchangeWrapper
+from trader.trader_hub import TraderHub
 import multiprocessing as mp
 from multiprocessing import Value
-import pickle
-import time
-import logging
+
 #coinigy = CoinigyRest2()
 #coinigy_socket = coinigy_socket()
 #coinigy_socket.start()
@@ -48,15 +34,15 @@ print(float(json2['last_trade']) * balance)
 print(positions)
 coinigy.getAccounts()
 """
-#btrx = Bittrex()
+#btrx = BittrexWrapper()
 #
-ae = ArtificialExchange()
+ae = ArtificialExchangeWrapper()
 
-#btrx = Bittrex(API_KEY_BTRX, API_SECRET_BTRX)
+#btrx = BittrexWrapper(API_KEY_BTRX, API_SECRET_BTRX)
 #print(btrx.getBalance())
-#print(btrx.getMarkets())
-#print(btrx.getTicker('BTC-XRP'))
-#print(btrx.getTicker('BTC-LTC'))
+#print(btrx.get_markets())
+#print(btrx.get_ticker('BTC-XRP'))
+#print(btrx.get_ticker('BTC-LTC'))
 #print(btrx.getBalance('XRP'))
 #print(btrx.getOrderHistory('BTC-XRP'))
 
@@ -85,7 +71,7 @@ with open('position.pickle', 'rb') as handle:
 print(loaded_position)
 """
 
-#print(btrx.getOrder('9b4608c1-414e-486b-b284-34b97f7857b2'))
+
 
 #cprUser = CryptopiaUser(API_KEY, API_SECRET)
 #print(cprUser.getMarket())
