@@ -69,3 +69,7 @@ class CryptoCompareWrapper(market_data.market_data_wrapper.MarketDataWrapper):
                         """
         params = 'histominute?fsym={}&tsym={}&limit={}'.format(pairs[0], pairs[1], minutes)
         return self._make_api_call(params)
+
+    def get_currency_24h_volume_toplist(self, base='USDT', limit=10):
+        params = 'top/volumes?tsym={}&limit={}'.format(base, limit)
+        return self._make_api_call(params)

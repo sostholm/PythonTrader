@@ -66,7 +66,7 @@ with open('position.pickle', 'wb') as handle:
     pickle.dump(position, handle, protocol=pickle.HIGHEST_PROTOCOL)
 
 with open('position.pickle', 'rb') as handle:
-    loaded_position = pickle.load(handle)
+    loaded_position = pickle._load(handle)
 
 print(loaded_position)
 """
