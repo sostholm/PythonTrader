@@ -1,15 +1,19 @@
-import requests
-import json
 from datetime import datetime as dt
 import pandas as pd
-import pickle
-from bs4 import BeautifulSoup
 from market_data.crypto_compare_wrapper import CryptoCompareWrapper
+import logging
 
 
 class DataManager(object):
 
     def __init__(self, top_list=10):
+        self.logger = logging.getLogger('DataManager')
+        hdlr = logging.FileHandler('logs\DataManager.log')
+        formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
+        hdlr.setFormatter(formatter)
+        self.logger.addHandler(hdlr)
+        self.logger.setLevel(logging.DEBUG)
+
         self.market_data = pd.DataFrame(index=['currency', 'date'])
         self.top_list = top_list
         self.crypto_compare = CryptoCompareWrapper()
@@ -23,9 +27,11 @@ class DataManager(object):
         self.currency_list = self._load_top_list_crypto_compare()
 
         try:
-            self.market_data = pd.read_pickle('../data/market_data.pickle')
+            self.market_data = pd.read_pickle('data/market_data.pickle')
+            self.logger.info('Successfully loaded market_data.pickle')
             self.update()
         except FileNotFoundError:
+            self.logger.error('market_data.pickle not found')
             self._download_market_data()
         self._save()
 
@@ -34,7 +40,8 @@ class DataManager(object):
         Save data to pickle
         :return: None
         """
-        self.market_data.to_pickle('../data/market_data.pickle')
+        self.market_data.to_pickle('data/market_data.pickle')
+        self.logger.info('market_data.pickle successfully saved')
 
     def update(self):
         """
@@ -49,15 +56,17 @@ class DataManager(object):
             for currency in self.currency_list:
                 new_data = self._load_specified_range_from_crypto_compare(currency=currency, days=time_frame)
                 self.market_data = pd.concat([self.market_data, new_data])
+        self.logger.info('market_data successfully updated')
         return self.market_data
 
     def _download_market_data(self):
         """Loads all data from crypto compare based on symbol"""
 
         dfs = []
-        for currency in self.top_list:
+        for currency in self.currency_list[0:self.top_list]:
             dfs.append(self._convert_data((currency, self._load_all_from_crypto_compare(currency))))
 
+        self.logger.info('New market data downloaded')
         self.market_data = pd.concat(self._convert_data(dfs))
 
     def _convert_data(self, data):
