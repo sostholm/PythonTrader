@@ -8,7 +8,12 @@ class DataManager(object):
 
     def __init__(self, top_list=10):
         self.logger = logging.getLogger('DataManager')
-        hdlr = logging.FileHandler('logs\DataManager.log')
+
+        try:
+            hdlr = logging.FileHandler('logs\DataManager.log')
+        except FileNotFoundError:
+            hdlr = logging.FileHandler('..\logs\DataManager.log')
+
         formatter = logging.Formatter('%(asctime)s %(levelname)s %(message)s')
         hdlr.setFormatter(formatter)
         self.logger.addHandler(hdlr)
@@ -31,8 +36,14 @@ class DataManager(object):
             self.logger.info('Successfully loaded market_data.pickle')
             self.update()
         except FileNotFoundError:
-            self.logger.error('market_data.pickle not found')
-            self._download_market_data()
+
+            try:
+                self.market_data = pd.read_pickle('../data/market_data.pickle')
+                self.logger.info('Successfully loaded market_data.pickle')
+                self.update()
+            except FileNotFoundError:
+                self.logger.error('market_data.pickle not found')
+                self._download_market_data()
         self._save()
 
     def _save(self):
@@ -40,8 +51,17 @@ class DataManager(object):
         Save data to pickle
         :return: None
         """
-        self.market_data.to_pickle('data/market_data.pickle')
-        self.logger.info('market_data.pickle successfully saved')
+        try:
+            self.market_data.to_pickle('data/market_data.pickle')
+            self.logger.info('market_data.pickle successfully saved')
+
+        except FileNotFoundError:
+            try:
+                self.market_data.to_pickle('../data/market_data.pickle')
+                self.logger.info('market_data.pickle successfully saved')
+            except FileNotFoundError:
+                print('Save error, unable to find file')
+                self.logger.error('Unable to save file')
 
     def update(self):
         """
